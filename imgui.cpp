@@ -1049,6 +1049,7 @@ CODE
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
 #include "imgui_internal.h"
+#include "imgui_chicane.h"
 
 // System includes
 #include <stdio.h>      // vsnprintf, sscanf, printf
@@ -4713,6 +4714,9 @@ void ImGui::UpdateMouseMovingWindowNewFrame()
         if (g.IO.MouseDown[0] && IsMousePosValid(&g.IO.MousePos) && !window_disappared)
         {
             ImVec2 pos = g.IO.MousePos - g.ActiveIdClickOffset;
+
+            Chicane::constrainWindowTranslation(pos, moving_window, g.ActiveIdClickOffset);
+
             if (moving_window->Pos.x != pos.x || moving_window->Pos.y != pos.y)
             {
                 SetWindowPos(moving_window, pos, ImGuiCond_Always);
@@ -6606,6 +6610,9 @@ static int ImGui::UpdateWindowManualResize(ImGuiWindow* window, const ImVec2& si
     // Apply back modified position/size to window
     const ImVec2 curr_pos = window->Pos;
     const ImVec2 curr_size = window->SizeFull;
+
+    Chicane::constraintWindowResizing(size_target, window);
+
     if (size_target.x != FLT_MAX && (window->Size.x != size_target.x || window->SizeFull.x != size_target.x))
         window->Size.x = window->SizeFull.x = size_target.x;
     if (size_target.y != FLT_MAX && (window->Size.y != size_target.y || window->SizeFull.y != size_target.y))
